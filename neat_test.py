@@ -43,7 +43,7 @@ def run(config_file):
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(5))
+    p.add_reporter(neat.Checkpointer(100))
 
     # Run for up to 300 generations.
     winner = p.run(fitness_player, 300)
