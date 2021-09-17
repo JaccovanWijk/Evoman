@@ -5,6 +5,11 @@ import neat
 import numpy as np
 from environment import Environment
 from player_controllers import player_controller
+
+# choose this for not using visuals and thus making experiments faster
+headless = True
+if headless:
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
             
 experiment_name = 'neat_test'
 if not os.path.exists(experiment_name):
