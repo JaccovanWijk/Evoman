@@ -16,8 +16,8 @@ env = Environment(experiment_name=experiment_name,
 
 def fitness_player(genomes, config):
     for genome_id, g in genomes:
-        g.fitness = 0
-        g.fitness = env.play(pcont=g)
+        # g.fitness = 0
+        g.fitness = env.play(pcont=g)[0]
         
 
 def run(config_file):
