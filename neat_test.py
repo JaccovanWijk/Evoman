@@ -2,6 +2,7 @@
 import sys, os
 sys.path.insert(0, 'evoman') 
 import neat           
+import numpy as np
 from environment import Environment
 from player_controllers import player_controller
             
@@ -15,14 +16,18 @@ env = Environment(experiment_name=experiment_name,
 
 
 def fitness_player(genomes, config):
+    f_g = []
     for genome_id, g in genomes:
         # g.fitness = 0
         g.fitness = env.play(pcont=g)[0]
+        f_g.append(g.fitness)
+    fitness_gens.append(np.mean(f_g)) # adding mean fitness to list
+    np.save('fitness_gens', fitness_gens) # saving to numpy file, opening in test.py
         
 
 def run(config_file):
     # Load configuration.
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+    config = neat.Config(neat.DefaultGenome,neat.DefaultReproduction,
                           neat.DefaultSpeciesSet, neat.DefaultStagnation,
                           config_file)
 
@@ -48,4 +53,5 @@ if __name__ == '__main__':
     # current working directory.
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'neat_config_file.txt')
+    fitness_gens = [] # list for mean fitness per generation
     run(config_path)
