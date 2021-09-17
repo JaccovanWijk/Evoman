@@ -28,6 +28,8 @@ def fitness_player(genomes, config):
         f_g.append(g.fitness)
     fitness_gens.append(np.mean(f_g)) # adding mean fitness to list
     np.save('fitness_gens', fitness_gens) # saving to numpy file, opening in test.py
+    fitness_max.append(np.max(f_g))
+    np.save('fitness_max', fitness_max)
         
 
 def run(config_file):
@@ -46,7 +48,7 @@ def run(config_file):
     p.add_reporter(neat.Checkpointer(100))
 
     # Run for up to 300 generations.
-    winner = p.run(fitness_player, 300)
+    winner = p.run(fitness_player, 15)
 
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
@@ -59,4 +61,5 @@ if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'neat_config_file.txt')
     fitness_gens = [] # list for mean fitness per generation
+    fitness_max = []
     run(config_path)
