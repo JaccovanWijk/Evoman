@@ -13,9 +13,13 @@ def plot_fitness(experiment_name, N_runs):
         f_mean = np.load(f"{experiment_name}/fitness_gens_{i}.npy")
         f_max = np.load(f"{experiment_name}/fitness_max_{i}.npy")
 
-        plt.plot(f_mean, '-')
-        plt.plot(f_max, '--')
+        lines = []
+        lines.append(plt.plot(f_mean, '-')[0])
+        lines.append(plt.plot(f_max, '--')[0])
 
+    plt.xlabel('generations')
+    plt.ylabel('fitness')
+    plt.legend(lines, ['mean', 'max'])
     plt.show()
 
 
