@@ -1,10 +1,26 @@
+# from matplotlib.lines import _LineStyle
 import numpy as np
 import matplotlib.pyplot as plt
+import sys, os
+sys.path.insert(0, 'evoman') 
 
-fitness = np.load('fitness_gens.npy')
-fitness_max = np.load('fitness_max.npy')
+def plot_fitness(experiment_name, N_runs):
 
-plt.figure()
-plt.plot(fitness, 'bo')
-plt.plot(fitness_max)
-plt.show()
+    local_dir = os.path.dirname(__file__)
+
+    plt.figure()
+    for i in range(N_runs):
+        f_mean = np.load(f"{experiment_name}/fitness_gens_{i}.npy")
+        f_max = np.load(f"{experiment_name}/fitness_max_{i}.npy")
+
+        plt.plot(f_mean, '-')
+        plt.plot(f_max, '--')
+
+    plt.show()
+
+
+if __name__ == '__main__':
+    experiment_name = 'neat'
+    N_runs = 10
+
+    plot_fitness(experiment_name, N_runs)
