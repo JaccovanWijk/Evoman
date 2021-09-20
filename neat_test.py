@@ -1,5 +1,7 @@
 #from __future__ import print_function
 import sys, os
+
+from numpy.lib.shape_base import _expand_dims_dispatcher
 sys.path.insert(0, 'evoman') 
 import neat       
 import pickle   
@@ -13,7 +15,7 @@ headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'neat'
+experiment_name = 'neat_pop30'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -51,7 +53,7 @@ def run(config_file):
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(100))
+    p.add_reporter(neat.Checkpointer(1000))
 
     # Run for up to 300 generations.
     winner = p.run(fitness_player, 300)
@@ -74,8 +76,9 @@ if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'neat_config_file.txt')
     for i in range(N_runs):
-        fitness_gens = []       # list for mean fitness per generation
-        fitness_max = []        # list for mean fitness per generation
-        run(config_path)
+        if not os.path.exists(f"{experiment_name}/winner_{i}.pkl"):
+            fitness_gens = []       # list for mean fitness per generation
+            fitness_max = []        # list for mean fitness per generation
+            run(config_path)
 
     plot_fitness(experiment_name, N_runs)
