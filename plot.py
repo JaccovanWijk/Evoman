@@ -23,7 +23,7 @@ def plot_fitness(experiment_name, N_runs, gens=20):
     plt.xlabel('generations')
     plt.ylabel('fitness')
     plt.legend(lines, ['mean', 'max'])
-    plt.show()
+    # plt.show()
 
     fitnesses[fitnesses==0] = np.nan
     mean_mean_fitness = np.nanmean(fitnesses[:,0,:], axis=0)
