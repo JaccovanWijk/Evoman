@@ -7,3 +7,5 @@ neat-checkpoint-27
 neat-checkpoint-28
 neat-checkpoint-29
 neat-checkpoint-31
+*.txt
+*.pyc
