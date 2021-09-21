@@ -9,7 +9,7 @@ from environment import Environment
 from player_controllers import player_controller
 from box_plot_test import boxplot
 
-experiment_name="neat"
+experiment_name="neat_nhidden10_gen20_enemy2"
 N_runs = 10
 n_hidden = 10
 local_dir = os.path.dirname(__file__)
@@ -21,7 +21,7 @@ env = Environment(experiment_name=experiment_name,
 
 
 def replay_genome(config_path, run_i, experiment_name):
-    genome_path = f"{experiment_name}/winner_{i}.pkl"
+    genome_path = f"{experiment_name}/winner_{run_i}.pkl"
     # Load requried NEAT config
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 
@@ -43,10 +43,10 @@ def five_runs(run_i, experiment_name):
         f_r.append(fit)
     return f_r
 
-# print(five_runs())
-fitnesses = np.zeros((N_runs, 5))
+# print(five_runs(3, experiment_name))
+fitnesses = np.zeros((0, 5))
 print(fitnesses.shape)
 for i in range(N_runs):
-    fitnesses[i,:] = five_runs(i, experiment_name)
+    fitnesses[i,:] = five_runs(0, experiment_name)
 np.save(f"{experiment_name}/boxplotfitness", fitnesses)
 boxplot(fitnesses)
