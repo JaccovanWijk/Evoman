@@ -6,7 +6,7 @@ sys.path.insert(0, 'evoman')
 import neat       
 import pickle   
 import numpy as np
-from environment import Environment
+from evoman.environment import Environment
 from player_controllers import player_controller
 from plot import plot_fitness
 
@@ -22,7 +22,7 @@ if not os.path.exists(experiment_name):
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
                   player_controller=player_controller())
-
+#hoi
 
 def fitness_player(genomes, config):
     global i
