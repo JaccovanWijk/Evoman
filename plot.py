@@ -6,10 +6,10 @@ import sys, os
 from numpy.core.fromnumeric import mean, std
 sys.path.insert(0, 'evoman') 
 
-def plot_fitness(experiment_name, N_runs):
+def plot_fitness(experiment_name, N_runs, gens=20):
 
     local_dir = os.path.dirname(__file__)
-    fitnesses = np.zeros((N_runs, 2, 100)) # different runs, mean and max, maximum 100 generations
+    fitnesses = np.zeros((N_runs, 2, gens)) # different runs, mean and max, maximum 100 generations
 
     plt.figure()
     for i in range(N_runs):
