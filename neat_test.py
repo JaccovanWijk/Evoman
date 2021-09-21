@@ -15,13 +15,18 @@ headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'neat_pop30'
+experiment_name = 'neat_nhidden10_gen20_enemy3'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
+<<<<<<< Updated upstream
                   player_controller=player_controller())
+=======
+                  player_controller=player_controller(n_hidden),
+                  enemies=[3])
+>>>>>>> Stashed changes
 
 
 def fitness_player(genomes, config):
