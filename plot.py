@@ -9,8 +9,6 @@ sys.path.insert(0, 'evoman')
 def plot_fitness(experiment_name, N_runs):
 
     local_dir = os.path.dirname(__file__)
-    # mean_fitness = []
-    # stdev_fitness = []
     fitnesses = np.zeros((N_runs, 2, 100)) # different runs, mean and max, maximum 100 generations
 
     plt.figure()
@@ -27,16 +25,18 @@ def plot_fitness(experiment_name, N_runs):
     plt.legend(lines, ['mean', 'max'])
     plt.show()
 
-    mean_mean_fitness = np.mean(fitnesses[:,0,:], axis=0)
-    stdev_mean_fitness = np.std(fitnesses[:,0,:], axis=0)
+    fitnesses[fitnesses==0] = np.nan
+    mean_mean_fitness = np.nanmean(fitnesses[:,0,:], axis=0)
+    stdev_mean_fitness = np.nanstd(fitnesses[:,0,:], axis=0)
     mean_mean_fitness = mean_mean_fitness[mean_mean_fitness != 0]
-    stdev_mean_fitness = stdev_mean_fitness[stdev_mean_fitness != 0]
-    
+
     plt.figure()
-    plt.plot(mean_mean_fitness, 'r-')
-    # plt.plot(mean_mean_fitness+, yfit, '-', color='gray')
+    plt.plot(mean_mean_fitness, 'r-', label="mean")
     plt.fill_between(np.arange(0, len(mean_mean_fitness)), mean_mean_fitness - stdev_mean_fitness, mean_mean_fitness + stdev_mean_fitness,
-                    color='red', alpha=0.2)
+                    color='red', alpha=0.2, label="stdev")
+    plt.xlabel("generations")
+    plt.ylabel("fitness")
+    plt.legend()
     plt.show()
 
 
