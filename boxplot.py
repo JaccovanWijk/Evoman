@@ -9,7 +9,7 @@ from environment import Environment
 from player_controllers import player_controller
 from box_plot_test import boxplot
 
-experiment_name="neat_nhidden10_gen20_enemy2"
+experiment_name="neat_nhidden10_gen20_enemy1" # Kan ook variabele zijn zodat we over meerdere tests kunnen loopen
 N_runs = 10
 n_hidden = 10
 local_dir = os.path.dirname(__file__)
@@ -17,7 +17,7 @@ config_path = os.path.join (local_dir,'neat_config_file.txt')
 
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
-                  player_controller=player_controller(n_hidden))
+                  player_controller=player_controller())
 
 
 def replay_genome(config_path, run_i, experiment_name):
@@ -44,9 +44,9 @@ def five_runs(run_i, experiment_name):
     return f_r
 
 # print(five_runs(3, experiment_name))
-fitnesses = np.zeros((0, 5))
-print(fitnesses.shape)
+fitnesses = []
 for i in range(N_runs):
-    fitnesses[i,:] = five_runs(0, experiment_name)
-np.save(f"{experiment_name}/boxplotfitness", fitnesses)
+    fitnesses.append(five_runs(i, experiment_name))
+fitnesses = [[1,1,2],[1,2,3],[3,2,2]]
+#np.save(f"{experiment_name}/boxplotfitness", fitnesses)
 boxplot(fitnesses)
