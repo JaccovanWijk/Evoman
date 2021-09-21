@@ -11,7 +11,7 @@ from environment import Environment
 from player_controllers import player_controller
 from box_plot_test import boxplot
 
-experiment_name="neat_nhidden10_gen20_enemy2"
+experiment_name="neat_nhidden10_gen20_enemy3"
 N_runs = 10
 n_hidden = 10
 
