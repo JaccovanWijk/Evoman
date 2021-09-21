@@ -4,17 +4,14 @@ import neat
 import pickle
 import numpy as np
 import sys, os
-import matplotlib.pyplot as plt
-
 sys.path.insert(0, 'evoman') 
 from environment import Environment
 from player_controllers import player_controller
 from box_plot_test import boxplot
 
-experiment_name="neat_nhidden10_gen20_enemy3"
+experiment_name="neat_nhidden10_gen20_enemy1" # Kan ook variabele zijn zodat we over meerdere tests kunnen loopen
 N_runs = 10
 n_hidden = 10
-
 local_dir = os.path.dirname(__file__)
 config_path = os.path.join (local_dir,'neat_config_file.txt')
 
@@ -46,17 +43,10 @@ def five_runs(run_i, experiment_name):
         f_r.append(fit)
     return f_r
 
-enemies = [2,3]
-plt.figure()
-data = []
-for e in enemies:
-    experiment_name = experiment_name[:-1]+f"{e}"
-    fitnesses = np.zeros((N_runs, 5))
-    for i in range(N_runs):
-        fitnesses[i,:] = five_runs(i, experiment_name)
-    np.save(f"{experiment_name}/boxplotfitness", fitnesses)
-    data.append(np.mean(fitnesses, axis=1))
-
-plt.boxplot(data)
-plt.xticks(np.arange(len(enemies))+1, enemies)
-plt.show()
+# print(five_runs(3, experiment_name))
+fitnesses = []
+for i in range(N_runs):
+    fitnesses.append(five_runs(i, experiment_name))
+fitnesses = [[1,1,2],[1,2,3],[3,2,2]]
+#np.save(f"{experiment_name}/boxplotfitness", fitnesses)
+boxplot(fitnesses)
