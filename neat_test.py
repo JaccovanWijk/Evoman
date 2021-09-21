@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from environment import Environment
 from player_controllers import player_controller
-from test import plot_fitness
+from plot import plot_fitness
 
 # choose this for not using visuals and thus making experiments faster
 headless = True
@@ -57,7 +57,7 @@ def run(config_file):
 
     # Run for up to 300 generations.
     winner = p.run(fitness_player, 300)
-
+    
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
 
