@@ -3,7 +3,7 @@ import numpy as np
 import os,neat
 
 class player_controller(Controller):
-    def __init__(self, _n_hidden=0):
+    def __init__(self):
         local_dir = os.path.dirname(__file__)
         config_path = os.path.join(local_dir, 'neat_config_file.txt')
         self.config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,

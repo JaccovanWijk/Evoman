@@ -19,12 +19,9 @@ experiment_name = 'neat_pop30'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
-# hidden neurons
-n_hidden = 10
-
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
-                  player_controller=player_controller(n_hidden))
+                  player_controller=player_controller())
 
 
 def fitness_player(genomes, config):
