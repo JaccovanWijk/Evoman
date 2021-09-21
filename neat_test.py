@@ -15,7 +15,7 @@ headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'neat_nhidden10_gen20_enemy3'
+experiment_name = 'neat_nhidden10_gen20_enemy2'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
