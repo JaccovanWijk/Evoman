@@ -3,8 +3,8 @@ import neat
 import pickle
 import numpy as np
 import sys, os
-from environment import Environment
 sys.path.insert(0, 'evoman') 
+from environment import Environment
 from player_controllers import player_controller
 
 experiment_name="neat"
@@ -17,7 +17,7 @@ env = Environment(experiment_name=experiment_name,
                   player_controller=player_controller(n_hidden))
 
 
-def replay_genome(config_path, genome_path=f"{experiment_name}/winner_0.pkl"):
+def replay_genome(config_path, genome_path=f"{experiment_name}/winner_2.pkl"):
     # Load requried NEAT config
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 
