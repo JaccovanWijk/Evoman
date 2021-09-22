@@ -16,7 +16,7 @@ local_dir = os.path.dirname(__file__)
 config_path = os.path.join (local_dir,'neat_config_file.txt')
 
 
-def replay_genome(config_path, run_i, experiment_name):
+def replay_genome(config_path, run_i, experiment_name, enemy):
     genome_path = f"{experiment_name}/winner_{run_i}.pkl"
     # Load requried NEAT config
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
@@ -29,17 +29,18 @@ def replay_genome(config_path, run_i, experiment_name):
     genomes = [(1, genome)]
     env = Environment(experiment_name=experiment_name,
             playermode="ai",
-            player_controller=player_controller())
+            player_controller=player_controller(),
+            enemies=[enemy])
 
     for genome_id, g in genomes:
         replay = env.play(pcont=g)
         gain = replay[1] - replay[2]
     return gain
 
-def five_runs(run_i, experiment_name):
+def five_runs(run_i, experiment_name, enemy):
     f_r = []
     for i in range(0,5):
-        gain = replay_genome(config_path, run_i, experiment_name)
+        gain = replay_genome(config_path, run_i, experiment_name, enemy)
         f_r.append(gain)
     return f_r
 
@@ -61,11 +62,12 @@ boxplotdata = []
 plt.figure()
 for i, experiment_name in enumerate(experiment_names):
     # doing every run from N_runs 5 times and saving the mean
-    gains = np.zeros((N_runs, 10))
+    gains = []
     for j in range(0, N_runs):
-        gains[j,:] = np.mean(five_runs(j, experiment_name))
+        #print(enemies[i])
+        gains.append(np.mean(five_runs(j, experiment_name, enemies[i])))
     # saving the data in a 1D array for plt.boxplot
-    boxplotdata.append(gains.flatten())
+    boxplotdata.append(gains)
 plt.boxplot(boxplotdata)
 # getting the xlabels for correct enemies
 plt.xticks(np.arange(0, len(enemies))+1, enemies)
