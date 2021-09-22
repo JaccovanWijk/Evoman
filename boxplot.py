@@ -31,17 +31,16 @@ def replay_genome(config_path, run_i, experiment_name):
             playermode="ai",
             player_controller=player_controller())
 
-
-
     for genome_id, g in genomes:
-        fitness = env.play(pcont=g)[0]
-    return fitness
+        replay = env.play(pcont=g)
+        gain = replay[1] - replay[2]
+    return gain
 
 def five_runs(run_i, experiment_name):
     f_r = []
     for i in range(0,5):
-        fit = replay_genome(config_path, run_i, experiment_name)
-        f_r.append(fit)
+        gain = replay_genome(config_path, run_i, experiment_name)
+        f_r.append(gain)
     return f_r
 
 # reading all directories and saving all starting with "neat_nhidden10_gen20_enemy" and the enemies list
@@ -62,14 +61,14 @@ boxplotdata = []
 plt.figure()
 for i, experiment_name in enumerate(experiment_names):
     # doing every run from N_runs 5 times and saving the mean
-    fitnesses = np.zeros((N_runs, 10))
+    gains = np.zeros((N_runs, 10))
     for j in range(0, N_runs):
-        fitnesses[j,:] = np.mean(five_runs(j, experiment_name))
+        gains[j,:] = np.mean(five_runs(j, experiment_name))
     # saving the data in a 1D array for plt.boxplot
-    boxplotdata.append(fitnesses.flatten())
+    boxplotdata.append(gains.flatten())
 plt.boxplot(boxplotdata)
 # getting the xlabels for correct enemies
 plt.xticks(np.arange(0, len(enemies))+1, enemies)
-plt.ylabel("fitness")
+plt.ylabel("individual gain")
 plt.xlabel("enemy")
 plt.show()
