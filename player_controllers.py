@@ -4,15 +4,19 @@ import os,neat
 
 class player_controller(Controller):
     def __init__(self):
+        # Initialize config by directing to config file
         local_dir = os.path.dirname(__file__)
         config_path = os.path.join(local_dir, 'neat_config_file.txt')
         self.config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
 									neat.DefaultSpeciesSet, neat.DefaultStagnation,
 									config_path)
+        
     def control(self, inputs, genome):
+        # Creating and activating neural network using the genome and config
        net = neat.nn.FeedForwardNetwork.create(genome, self.config)
        output = net.activate(inputs)
        
+       # Weight of each action
        if output[0] > 0.5:
            left = 1
        else:
