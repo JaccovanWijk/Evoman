@@ -1,5 +1,4 @@
 
-from neat_test import N_runs
 import neat
 import pickle
 import numpy as np
@@ -8,6 +7,11 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, 'evoman') 
 from environment import Environment
 from player_controllers import player_controller
+
+# choose this for not using visuals and thus making experiments faster
+headless = True
+if headless:
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 # experiment_name="neat_nhidden10_gen20_enemy1" # Kan ook variabele zijn zodat we over meerdere tests kunnen loopen
 N_runs = 10
@@ -45,7 +49,7 @@ directories = [name for name in os.listdir(".") if os.path.isdir(name)]
 enemies = []
 experiment_names = []
 for dir in directories:
-    if dir[:26] == "neat_nhidden10_gen20_enemy":
+    if dir[:35] == "neat_nhidden5_gen20_randomini_enemy":
         enemies.append(int(dir[-1]))
         experiment_names.append(dir)
 
@@ -62,7 +66,8 @@ for i, experiment_name in enumerate(experiment_names):
     env = Environment(experiment_name=experiment_name,
             playermode="ai",
             player_controller=player_controller(),
-            enemies=[enemies[i]])
+            enemies=[enemies[i]],
+            randomini="yes")
     for j in range(0, N_runs):
         #print(enemies[i])
         gains.append(np.mean(five_runs(j, experiment_name)))#, enemies[i])))
@@ -73,4 +78,5 @@ plt.boxplot(boxplotdata)
 plt.xticks(np.arange(0, len(enemies))+1, enemies)
 plt.ylabel("individual gain")
 plt.xlabel("enemy")
+plt.savefig("boxplot", dpi=400)
 plt.show()
