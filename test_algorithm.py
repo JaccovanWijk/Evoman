@@ -23,7 +23,8 @@ enemy = 1
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
                   player_controller=player_controller(),
-                  enemies=[enemy])
+                  enemies=[enemy],
+                  randomini="yes")
 
 def fitness(population):
     # TODO: Check fitness
