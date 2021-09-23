@@ -15,14 +15,14 @@ headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'neat_nhidden10_gen20_enemy2'
+experiment_name = 'neat_nhidden10_gen20_randomini_enemy1'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
                   player_controller=player_controller(),
-                  enemies=[3],
+                  enemies=[6],
                   randomini="yes")
 
 
