@@ -18,6 +18,7 @@ N_runs = 10
 n_hidden = 10
 local_dir = os.path.dirname(__file__)
 config_path = os.path.join (local_dir,'neat_config_file.txt')
+experiment_name0 = "neat_nhidden5_gen20_randomini_enemy"
 
 
 def replay_genome(config_path, run_i, experiment_name):
@@ -49,9 +50,14 @@ directories = [name for name in os.listdir(".") if os.path.isdir(name)]
 enemies = []
 experiment_names = []
 for dir in directories:
-    if dir[:35] == "neat_nhidden5_gen20_randomini_enemy":
+    # for randomini = yes
+    if dir[:len(experiment_name0)] == experiment_name0:
         enemies.append(int(dir[-1]))
         experiment_names.append(dir)
+    # # for randomini = no
+    # if dir[:25] == "neat_nhidden5_gen20_enemy":
+    #     enemies.append(int(dir[-1]))
+    #     experiment_names.append(dir)
 
 # sorting the exp names and enemies alphabetically/numerically, so lists keep a corresponding order
 experiment_names = np.sort(experiment_names)
@@ -78,5 +84,5 @@ plt.boxplot(boxplotdata)
 plt.xticks(np.arange(0, len(enemies))+1, enemies)
 plt.ylabel("individual gain")
 plt.xlabel("enemy")
-plt.savefig("boxplot", dpi=400)
+plt.savefig(f"boxplotfigs/boxplot_{experiment_name0}", dpi=400)
 plt.show()
