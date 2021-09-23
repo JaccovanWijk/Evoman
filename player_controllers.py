@@ -43,6 +43,10 @@ class player_controller(Controller):
 
        return [left, right, jump, shoot, release]
    
+
+def sigmoid_activation(x):
+	return 1./(1.+np.exp(-x))
+   
 # implements controller structure for player
 class player_controller2(Controller):
 	def __init__(self, _n_hidden):
