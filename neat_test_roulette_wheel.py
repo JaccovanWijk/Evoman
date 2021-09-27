@@ -36,7 +36,7 @@ def roulette_wheel(f_i, f_mean):
         print(f"roulette: fi: {f_i}, fmean: {f_mean}, u: {u}")
         if u > 3:
             u = 3
-        print(f"u was too big, u = 3")
+            print(f"u was too big, u = 3")
     else: 
         u = 1
         print(f"roulette, but u = 1: fi: {f_i}, fmean: {f_mean}, u: {u}")
