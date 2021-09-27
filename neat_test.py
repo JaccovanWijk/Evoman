@@ -23,7 +23,11 @@ headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'neat_sigma_nhidden5_gen50_enemy6'
+if sigma_scaling:
+    experiment_name = f"neat_sigma_nhidden5_gen{generations}_enemy{enemy}"
+else:
+    experiment_name = f"neat_nhidden5_gen{generations}_enemy{enemy}"
+    
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
