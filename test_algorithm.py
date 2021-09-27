@@ -1,6 +1,7 @@
 #from __future__ import print_function
 import sys, os
 
+import random
 from numpy.lib.shape_base import _expand_dims_dispatcher
 sys.path.insert(0, 'evoman') 
 import neat       
@@ -15,12 +16,17 @@ headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'test'
+pop_size = 50
+gen = 50
+n_hidden = 5
+N_runs = 10
+enemy = 6
+keep_old = 0.2
+
+experiment_name = f"crossover_nhidden5_gen{gen}_enemy{enemy}"
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
-   
-enemy = 1
-n_hidden = 10
+
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
                   player_controller=player_controller2(n_hidden),
@@ -41,26 +47,47 @@ def fitness(population, i):
      
     return pop_fitness
 
-def offspring(solutions):
-    # TODO: Create offsprings according to the algorithm
-    # Find fitness only for the new population
-    return solutions[0]
+def offspring(solutions): #, old):
     population, pop_fitness = solutions
-    new_population = [[]]
-    chances = [(x + 10)/110 for x in pop_fitness] #normalize -10/100 to 0/1
-    while len(new_population) < len(population):
-        parents = np.random.choice(population, 2, p=chances) # Pick two parents based on their fitness
-        child = parents[1][:len(parents[1])] + parents[2][len(parents[2]):]
-        new_population[0].add(child)
+    new_population = np.zeros((len(pop),len(pop[0])))
+    
+    # parents_staying = int(len(population) * old)
+    # new_children = len(population) - parents_staying
+    
+    # # Add highest parents
+    # #TODO: add hightest parents
+    # top_index = sorted(range(len(pop_fitness)), key=lambda i: pop_fitness[i])[-parents_staying:]
+    # for p, i in enumerate(top_index):
+    #     new_population[p] = population[i]
+    
+    # get weights according to relative fitness
+    if (min(pop_fitness) < 0):
+        positive = [x + min(pop_fitness) for x in pop_fitness]
+        pop_weights = [x/sum(positive) for x in positive]
+    else:
+        pop_weights = [x/sum(pop_fitness) for x in pop_fitness]
+        
+    
+    # Make 100% new population with uniform crossover
+    for c in range(population): #new_children):
+        # #Ugly but works
+        # c += parents_staying
+        
+        # Choose random parents with weights in mind
+        parents = random.choices(population, weights=pop_weights, k=2)
+        
+        # Pick every gene of the parents randomly
+        parent_length = len(parents[0])
+        child = np.zeros(parent_length)
+        for j in range(parent_length):
+            gene = random.choice([parents[0][j], parents[1][j]])
+            child[j] = gene
+        new_population[c] = child
+
     return new_population
 
 fitness_gens = []
 fitness_max = []
-
-pop_size = 30
-gen = 20
-n_hidden = 10
-N_runs = 10
 
 # number of weights for multilayer with 10 hidden neurons
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
@@ -71,29 +98,38 @@ for r in range(N_runs):
     pop = np.random.uniform(-1, 1, (pop_size, n_vars))
     pop_fitness = fitness(pop, r)
     
-    best_each_gen = [np.argmax(pop_fitness)]
-    best = pop[np.where(pop == best_each_gen)[0]]
+    best_each_gen = [np.max(pop_fitness)]
+    best = pop[np.argmax(pop_fitness)]
     mean_each_gen = [np.mean(pop_fitness)]
     std_each_gen = [np.std(pop_fitness)]
+    
+    print("\n------------------------------------------------------------------")
+    print(f"Generation 0. Mean {mean_each_gen[-1]}, best {best_each_gen[-1]}")
+    print("------------------------------------------------------------------")
     
     solutions = [pop, pop_fitness]
     env.update_solutions(solutions)
     
     for i in range(gen):
-        pop = offspring(solutions)
+        pop = offspring(solutions, keep_old)
         pop_fitness = fitness(pop, r)
         
-        new_best = np.argmax(pop_fitness)
+        new_best = np.max(pop_fitness)
         if new_best > best_each_gen[-1]:
-            best_each_gen.append(new_best)
-            best = pop[np.where(pop == best_each_gen)[0]]
-        else:
-            best_each_gen.append(best_each_gen[-1])
+            best = pop[np.argmax(pop_fitness)]
+        best_each_gen.append(new_best)
         
         mean_each_gen.append(np.mean(pop_fitness))
         std_each_gen.append(np.std(pop_fitness))
+         
+        print("\n------------------------------------------------------------------")
+        print(f"Generation {i+1}. Mean {mean_each_gen[-1]}, best {best_each_gen[-1]}")
+        print("------------------------------------------------------------------")
         
         solutions = [pop, pop_fitness]
         env.update_solutions(solutions)
     
-    # TODO: Save winner
+    # Stackoverflow on how to save the winning file and open it: https://stackoverflow.com/questions/61365668/applying-saved-neat-python-genome-to-test-environment-after-training
+    with open(f"{experiment_name}/winner_{r}.pkl", "wb") as f:
+        pickle.dump(best, f)
+        f.close()
