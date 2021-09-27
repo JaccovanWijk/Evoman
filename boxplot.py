@@ -52,7 +52,7 @@ enemies = []
 nhiddens = []
 experiment_names = []
 for dir in directories:
-    if re.match(r"neat_nhidden\d{1,2}_gen20_randomini_enemy", dir) and dir[-1] == f"{enemy}":
+    if re.match(r"neat_roulette_nhidden\d{1,2}_gen20_randomini_enemy", dir) and dir[-1] == f"{enemy}":
         nhiddens.append(int(re.findall(r"nhidden\d{1,2}", dir)[0][7:]))
         experiment_names.append(dir)
 
@@ -92,5 +92,5 @@ plt.boxplot(boxplotdata)
 plt.xticks(np.arange(0, len(nhiddens))+1, nhiddens)
 plt.ylabel("individual gain")
 plt.xlabel("nhidden")
-plt.savefig(f"boxplotfigs/boxplot_randomini_enemy{enemy}", dpi=400)
+plt.savefig(f"boxplotfigs/boxplot_roulette_randomini_enemy{enemy}", dpi=400)
 plt.show()
