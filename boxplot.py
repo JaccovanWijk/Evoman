@@ -49,15 +49,17 @@ def five_runs(run_i, experiment_name):
 # reading all directories and saving all starting with "neat_nhidden10_gen20_enemy" and the enemies list
 directories = [name for name in os.listdir(".") if os.path.isdir(name)]
 enemies = []
-nhiddens = []
 experiment_names = []
+
 for dir in directories:
-    if re.match(r"neat_roulette_nhidden\d{1,2}_gen20_randomini_enemy", dir) and dir[-1] == f"{enemy}":
-        nhiddens.append(int(re.findall(r"nhidden\d{1,2}", dir)[0][7:]))
+    if re.match(r"neat_nhidden5_gen20_enemy", dir):
+        enemies.append(int(re.findall(r"enemy\d{1,2}", dir)[0][5:]))
         experiment_names.append(dir)
 
-experiment_names = [x for _, x in sorted(zip(nhiddens, experiment_names))]
-nhiddens = np.sort(nhiddens)
+experiment_names = [x for _, x in sorted(zip(enemies, experiment_names))]
+enemies.sort()
+# experiment_names.append("neat_nhidden5_gen20_randomini_enemy6")
+# enemies.append("6_randomini")
 
     # # for randomini = yes
     # if dir[:len(experiment_name0)] == experiment_name0:
@@ -80,7 +82,7 @@ for i, experiment_name in enumerate(experiment_names):
     env = Environment(experiment_name=experiment_name,
             playermode="ai",
             player_controller=player_controller(),
-            enemies=[enemy],
+            enemies=[6],
             randomini="yes")
     for j in range(0, N_runs):
         #print(enemies[i])
@@ -89,8 +91,8 @@ for i, experiment_name in enumerate(experiment_names):
     boxplotdata.append(gains)
 plt.boxplot(boxplotdata)
 # getting the xlabels for correct enemies
-plt.xticks(np.arange(0, len(nhiddens))+1, nhiddens)
+plt.xticks(np.arange(0, len(enemies))+1, enemies)
 plt.ylabel("individual gain")
-plt.xlabel("nhidden")
-plt.savefig(f"boxplotfigs/boxplot_roulette_randomini_enemy{enemy}", dpi=400)
+plt.xlabel("enemy")
+plt.savefig(f"boxplotfigs/boxplot_randomini_neat_original", dpi=400)
 plt.show()
