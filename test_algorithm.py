@@ -27,11 +27,11 @@ env = Environment(experiment_name=experiment_name,
                   enemies=[enemy],
                   randomini="yes")
 
-def fitness(population):
+def fitness(population, i):
     pop_fitness = []
     for individual in population:
-        reshaped = np.reshape(individual, (1,len(individual)))
-        fitness = env.play(pcont=reshaped)[0]
+        #reshaped = np.reshape(individual, (1,len(individual)))
+        fitness = env.play(pcont=individual)[0]
         pop_fitness.append(fitness)
     
     fitness_gens.append(np.mean(pop_fitness))       # adding mean fitness to list
@@ -44,9 +44,10 @@ def fitness(population):
 def offspring(solutions):
     # TODO: Create offsprings according to the algorithm
     # Find fitness only for the new population
+    return solutions[0]
     population, pop_fitness = solutions
     new_population = [[]]
-    chances = (pop_fitness+10)/110 #normalize -10/100 to 0/1
+    chances = [(x + 10)/110 for x in pop_fitness] #normalize -10/100 to 0/1
     while len(new_population) < len(population):
         parents = np.random.choice(population, 2, p=chances) # Pick two parents based on their fitness
         child = parents[1][:len(parents[1])] + parents[2][len(parents[2]):]
@@ -59,36 +60,40 @@ fitness_max = []
 pop_size = 30
 gen = 20
 n_hidden = 10
+N_runs = 10
 
 # number of weights for multilayer with 10 hidden neurons
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5
 
-# create initial population and add to environment
-pop = np.random.uniform(-1, 1, (pop_size, n_vars))
-pop_fitness = fitness(pop)
+for r in range(N_runs):
 
-# TODO: SAVE BEST WEIGHT VALUES
-best_each_gen = np.argmax(pop_fitness)
-mean_each_gen = [np.mean(pop_fitness)]
-std_each_gen = [np.std(pop_fitness)]
-
-solutions = [pop, pop_fitness]
-env.update_solutions(solutions)
-
-for i in range(gen):
-    pop = offspring(solutions)
-    pop_fitness = fitness(pop)
+    # create initial population and add to environment
+    pop = np.random.uniform(-1, 1, (pop_size, n_vars))
+    pop_fitness = fitness(pop, r)
+    
+    best_each_gen = [np.argmax(pop_fitness)]
+    best = pop[np.where(pop == best_each_gen)[0]]
+    mean_each_gen = [np.mean(pop_fitness)]
+    std_each_gen = [np.std(pop_fitness)]
+    
     solutions = [pop, pop_fitness]
     env.update_solutions(solutions)
     
-    new_best = np.argmax(pop_fitness)
-    if new_best > best_each_gen[-1]:
-        best_each_gen.append(new_best)
-        # TODO: Change best genome to new best
-    else:
-        best_each_gen.append(best_each_gen[-1])
+    for i in range(gen):
+        pop = offspring(solutions)
+        pop_fitness = fitness(pop, r)
+        
+        new_best = np.argmax(pop_fitness)
+        if new_best > best_each_gen[-1]:
+            best_each_gen.append(new_best)
+            best = pop[np.where(pop == best_each_gen)[0]]
+        else:
+            best_each_gen.append(best_each_gen[-1])
+        
+        mean_each_gen.append(np.mean(pop_fitness))
+        std_each_gen.append(np.std(pop_fitness))
+        
+        solutions = [pop, pop_fitness]
+        env.update_solutions(solutions)
     
-    mean_each_gen.append(np.mean(pop_fitness))
-    std_each_gen.append(np.std(pop_fitness))
-
-# TODO: Save winner
+    # TODO: Save winner
