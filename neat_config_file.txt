@@ -2,8 +2,8 @@
 [NEAT]
 fitness_criterion     = max
 # got solutions where enemy life = 0, but max fitness was 94
-fitness_threshold     = 95 
-pop_size              = 30
+fitness_threshold     = 120
+pop_size              = 50
 reset_on_extinction   = False
 
 [DefaultGenome]
