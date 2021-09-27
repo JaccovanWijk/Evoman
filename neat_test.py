@@ -10,19 +10,27 @@ from evoman.environment import Environment
 from player_controllers import player_controller
 from plot import plot_fitness
 
+
+
+N_runs = 10
+generations = 50
+enemy = 6
+sigma_scaling = True
+
+
 # choose this for not using visuals and thus making experiments faster
 headless = True
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
             
-experiment_name = 'neat_nhidden10_gen20_randomini_enemy1'
+experiment_name = 'neat_sigma_nhidden5_gen50_enemy6'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
 env = Environment(experiment_name=experiment_name,
                   playermode="ai",
                   player_controller=player_controller(),
-                  enemies=[6],
+                  enemies=[enemy],
                   randomini="yes")
 
 
@@ -30,14 +38,34 @@ def fitness_player(genomes, config):
     global i
     f_g = []
     for genome_id, g in genomes:
-        # g.fitness = 0
         g.fitness = env.play(pcont=g)[0]
         f_g.append(g.fitness)
     fitness_gens.append(np.mean(f_g))       # adding mean fitness to list
     np.save(f"{experiment_name}/fitness_gens_{i}", fitness_gens)   # saving to numpy file, opening in test.py
     fitness_max.append(np.max(f_g))         # adding max fitness to list
     np.save(f"{experiment_name}/fitness_max_{i}", fitness_max)     # saving to numpy file, opening in test.py
+
+def fitness_sigma(genomes, config):
+    global i
+    unscaled = []
+    f_g = []
+    for genome_id, g in genomes:
+        unscaled.append(env.play(pcont=g)[0])
+
+    j = 0
+    for genome_id, g in genomes:
+        mean = np.mean(unscaled)
+        std = np.std(unscaled)
+                
+        g.fitness = max(0, unscaled[j] - (mean - 2 * std))
+        f_g.append(g.fitness)
+        j += 1
         
+    fitness_gens.append(np.mean(unscaled))       # adding mean fitness to list
+    np.save(f"{experiment_name}/fitness_gens_{i}", fitness_gens)   # saving to numpy file, opening in test.py
+    fitness_max.append(np.max(unscaled))         # adding max fitness to list
+    np.save(f"{experiment_name}/fitness_max_{i}", fitness_max)     # saving to numpy file, opening in test.py
+
 
 def run(config_file):
     # Load configuration.
@@ -54,8 +82,11 @@ def run(config_file):
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(1000))
 
-    # Run for up to 300 generations.
-    winner = p.run(fitness_player, 20)
+    if sigma_scaling:
+        # Run for up to 300 generations.
+        winner = p.run(fitness_sigma, generations)
+    else:
+        winner = p.run(fitness_player, generations)
     
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
@@ -64,9 +95,6 @@ def run(config_file):
     with open(f"{experiment_name}/winner_{i}.pkl", "wb") as f:
         pickle.dump(winner, f)
         f.close()
-
-
-N_runs = 10
 
 if __name__ == '__main__':
     # Determine path to configuration file. This path manipulation is
