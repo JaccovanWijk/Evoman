@@ -1,5 +1,6 @@
 #from __future__ import print_function
 import sys, os
+from numpy.core.fromnumeric import mean
 
 from numpy.lib.shape_base import _expand_dims_dispatcher
 sys.path.insert(0, 'evoman') 
@@ -32,8 +33,14 @@ env = Environment(experiment_name=experiment_name,
 def roulette_wheel(f_i, f_mean):
     if f_i > f_mean:
         u = abs(math.floor(f_i/f_mean))
+        print(f"roulette: fi: {f_i}, fmean: {f_mean}, u: {u}")
+        if u > 3:
+            u = 3
+        print(f"u was too big, u = 3")
     else: 
         u = 1
+        print(f"roulette, but u = 1: fi: {f_i}, fmean: {f_mean}, u: {u}")
+
     return u
 
 gen = 0
@@ -45,13 +52,17 @@ def fitness_player(genomes, config):
     genomes_to_iter = copy(genomes)
     j = 0 
     global gen 
-    mean_fitness = -math.inf
+    if gen == 0:
+        mean_fitness = -math.inf
+    else:
+        mean_fitness = fitness_gens[-1]
+
     for genome_id, g in genomes_to_iter:
         print(f"run i:{i}, gen: {gen} ({j}/{len(genomes_to_iter)})")
         # g.fitness = 0
         g.fitness = env.play(pcont=g)[0]
         f_g.append(g.fitness)
-        if gen > 1:
+        if gen > 0:
             u = roulette_wheel(g.fitness, mean_fitness)
             for k in range(u-1):
                 print(f"So good, I added it {k+1} extra times, because f: {g.fitness} and fmean {mean_fitness}")
@@ -59,7 +70,9 @@ def fitness_player(genomes, config):
                 f_g.append(g.fitness)
         j += 1
     fitness_gens.append(np.mean(f_g))       # adding mean fitness to list
+    print(f"f_g: {f_g}")
     mean_fitness = np.mean(f_g)
+    print(f"mean_fitness: {mean_fitness}")
     np.save(f"{experiment_name}/fitness_gens_{i}", fitness_gens)   # saving to numpy file, opening in test.py
     fitness_max.append(np.max(f_g))         # adding max fitness to list
     np.save(f"{experiment_name}/fitness_max_{i}", fitness_max)     # saving to numpy file, opening in test.py
@@ -91,6 +104,8 @@ def run(config_file):
         pickle.dump(winner, f)
         f.close()
 
+    
+
 
 N_runs = 10
 
@@ -104,6 +119,7 @@ if __name__ == '__main__':
         if not os.path.exists(f"{experiment_name}/winner_{i}.pkl"):
             fitness_gens = []       # list for mean fitness per generation
             fitness_max = []        # list for mean fitness per generation
+            gen = 0
             run(config_path)
 
     plot_fitness(experiment_name, N_runs)
