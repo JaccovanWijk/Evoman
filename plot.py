@@ -10,7 +10,6 @@ sys.path.insert(0, 'evoman')
 def plot_fitness(general_names, N_runs, gens=20):
 
     local_dir = os.path.dirname(__file__)
-    fitnesses = np.zeros((N_runs, 2, gens)) # different runs, mean and max, maximum 100 generations
 
     directories = [name for name in os.listdir(".") if os.path.isdir(name)]
     enemies = []
@@ -21,34 +20,50 @@ def plot_fitness(general_names, N_runs, gens=20):
             if re.match(general_name, dir):
                 enemies.append(int(re.findall(r"enemy\d{1,2}", dir)[0][5:]))
                 experiment_names.append(dir)
+                
+    fitnesses = np.zeros((len(experiment_names), N_runs, 2, gens)) # different runs, mean and max, maximum 100 generations
             
-    for experiment_name in experiment_names:       
-        plt.figure()
-        plt.title(f"{experiment_name}")
+    for exp_id, experiment_name in enumerate(experiment_names):       
+        # plt.figure()
+        # plt.title(f"{experiment_name}")
         for i in range(N_runs):
             f_mean = np.load(f"{experiment_name}/fitness_gens_{i}.npy")
             f_max = np.load(f"{experiment_name}/fitness_max_{i}.npy")
-            fitnesses[i, :, :len(f_mean)] = np.array((f_mean, f_max))
-            lines = []
-            lines.append(plt.plot(f_mean, '-')[0])
-            lines.append(plt.plot(f_max, '--')[0])
+            fitnesses[exp_id, i, :, :len(f_mean)] = np.array((f_mean, f_max))
+            # lines = []
+            # lines.append(plt.plot(f_mean, '-')[0])
+            # lines.append(plt.plot(f_max, '--')[0])
 
-    plt.xlabel('generations')
-    plt.ylabel('fitness')
-    plt.legend(lines, ['mean', 'max'])
-
-    fitnesses[fitnesses==0] = np.nan
-    mean_mean_fitness = np.nanmean(fitnesses[:,0,:], axis=0)
-    stdev_mean_fitness = np.nanstd(fitnesses[:,0,:], axis=0)
-    mean_mean_fitness = mean_mean_fitness[mean_mean_fitness != 0]
-
-    plt.figure()
-    plt.plot(mean_mean_fitness, 'r-', label="mean")
-    plt.fill_between(np.arange(0, len(mean_mean_fitness)), mean_mean_fitness - stdev_mean_fitness, mean_mean_fitness + stdev_mean_fitness,
-                    color='red', alpha=0.2, label="stdev")
-    plt.xlabel("generations")
-    plt.ylabel("fitness")
-    plt.legend()
+    # plt.xlabel('generations')
+    # plt.ylabel('fitness')
+    # plt.legend(lines, ['mean', 'max'])
+    
+    for i, experiment_name in enumerate(experiment_names):
+        plt.figure(i%3)
+        
+        fitnesses[fitnesses==0] = np.nan
+        mean_mean_fitness = np.nanmean(fitnesses[i,:,0,:], axis=0)
+        stdev_mean_fitness = np.nanstd(fitnesses[i,:,0,:], axis=0)
+        mean_mean_fitness = mean_mean_fitness[mean_mean_fitness != 0]
+        
+        if (i < len(experiment_names)/2):
+            color = 'red'
+            label = 'normal fitness'
+        else:
+            color = 'blue'
+            label = 'sigma scaled'
+        plt.plot(mean_mean_fitness, '-', label=label, color=color)
+        plt.fill_between(np.arange(0, len(mean_mean_fitness)), mean_mean_fitness - stdev_mean_fitness, mean_mean_fitness + stdev_mean_fitness,
+                        color=color, alpha=0.2)
+        plt.title(f"normal fitness vs. sigma - enemy {experiment_name[-1]}")
+        # plt.ylim(-9,80)
+        plt.xlabel("generations")
+        plt.ylabel("fitness")
+        plt.legend(loc=4)
+        plt.ylim(-9, 80)
+        
+        plt.savefig(f"meanfigs/neat_mean_enemy{experiment_name[-1]}", dpi=400)
+        
     plt.show()
 
 
