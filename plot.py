@@ -2,23 +2,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys, os
+import regex as re
 
 from numpy.core.fromnumeric import mean, std
 sys.path.insert(0, 'evoman') 
 
-def plot_fitness(experiment_name, N_runs, gens=20):
+def plot_fitness(general_names, N_runs, gens=20):
 
     local_dir = os.path.dirname(__file__)
     fitnesses = np.zeros((N_runs, 2, gens)) # different runs, mean and max, maximum 100 generations
 
-    plt.figure()
-    for i in range(N_runs):
-        f_mean = np.load(f"{experiment_name}/fitness_gens_{i}.npy")
-        f_max = np.load(f"{experiment_name}/fitness_max_{i}.npy")
-        fitnesses[i, :, :len(f_mean)] = np.array((f_mean, f_max))
-        lines = []
-        lines.append(plt.plot(f_mean, '-')[0])
-        lines.append(plt.plot(f_max, '--')[0])
+    directories = [name for name in os.listdir(".") if os.path.isdir(name)]
+    enemies = []
+    experiment_names = []
+
+    for dir in directories:
+        for general_name in general_names:
+            if re.match(general_name, dir):
+                enemies.append(int(re.findall(r"enemy\d{1,2}", dir)[0][5:]))
+                experiment_names.append(dir)
+            
+    for experiment_name in experiment_names:       
+        plt.figure()
+        plt.title(f"{experiment_name}")
+        for i in range(N_runs):
+            f_mean = np.load(f"{experiment_name}/fitness_gens_{i}.npy")
+            f_max = np.load(f"{experiment_name}/fitness_max_{i}.npy")
+            fitnesses[i, :, :len(f_mean)] = np.array((f_mean, f_max))
+            lines = []
+            lines.append(plt.plot(f_mean, '-')[0])
+            lines.append(plt.plot(f_max, '--')[0])
 
     plt.xlabel('generations')
     plt.ylabel('fitness')
@@ -40,7 +53,7 @@ def plot_fitness(experiment_name, N_runs, gens=20):
 
 
 if __name__ == '__main__':
-    experiment_name = 'neat'
+    experiment_names = ['neat_sigma_nhidden5_gen50_enemy', 'neat_nhidden5_gen50_enemy']
     N_runs = 10
 
-    plot_fitness(experiment_name, N_runs)
+    plot_fitness(experiment_names, N_runs, gens=50)
