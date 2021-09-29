@@ -52,12 +52,16 @@ enemies = []
 experiment_names = []
 
 for dir in directories:
-    if re.match(r"neat_nhidden5_gen20_enemy", dir):
+    if re.match("neat_nhidden5_gen50_enemy", dir):
         enemies.append(int(re.findall(r"enemy\d{1,2}", dir)[0][5:]))
         experiment_names.append(dir)
-
+    if re.match("neat_sigma_nhidden5_gen50_enemy",dir):
+        enemies.append(int(re.findall(r"enemy\d{1,2}", dir)[0][5:]))
+        experiment_names.append(dir)
 experiment_names = [x for _, x in sorted(zip(enemies, experiment_names))]
 enemies.sort()
+
+
 # experiment_names.append("neat_nhidden5_gen20_randomini_enemy6")
 # enemies.append("6_randomini")
 
@@ -73,6 +77,7 @@ enemies.sort()
 # print(experiment_names)
 
 
+
 # saving all data for the boxplots
 boxplotdata = []
 plt.figure()
@@ -82,17 +87,21 @@ for i, experiment_name in enumerate(experiment_names):
     env = Environment(experiment_name=experiment_name,
             playermode="ai",
             player_controller=player_controller(),
-            enemies=[6],
+            enemies=[enemies[i]],
             randomini="yes")
     for j in range(0, N_runs):
         #print(enemies[i])
         gains.append(np.mean(five_runs(j, experiment_name)))#, enemies[i])))
-    # saving the data in a 1D array for plt.boxplot
     boxplotdata.append(gains)
+    # saving the data in a 1D array for plt.boxplot
+for i, enemy in enumerate(enemies):
+    if (i % 2) != 0:
+        enemies[i] = f"{enemy} Sigma"
 plt.boxplot(boxplotdata)
 # getting the xlabels for correct enemies
 plt.xticks(np.arange(0, len(enemies))+1, enemies)
 plt.ylabel("individual gain")
-plt.xlabel("enemy")
+plt.xlabel('Enemy')
+plt.title('Individual Gain Normal vs Sigma Scaling')
 plt.savefig(f"boxplotfigs/boxplot_randomini_neat_original", dpi=400)
 plt.show()
