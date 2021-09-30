@@ -5,6 +5,7 @@ sys.path.insert(0, 'evoman')
 import neat       
 import pickle   
 import numpy as np
+from time import time
 from evoman.environment import Environment
 from player_controllers import player_controller
 from plot import plot_fitness
@@ -95,6 +96,7 @@ def run():
         f.close()
 
 if __name__ == '__main__':
+    time0 = time()
     # set parameters
     N_runs = 10      
     generations = 50          
@@ -133,6 +135,7 @@ if __name__ == '__main__':
             fitness_max = []    
             
             run()
-
+    time1 = time()
+    print(f"#########\nTook {time1-time0} seconds.\n#########")
     # plot results
     plot_fitness(experiment_name, N_runs)
