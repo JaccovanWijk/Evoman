@@ -11,6 +11,7 @@ from evoman.environment import Environment
 from player_controllers import player_controller2
 from plot import plot_fitness
 
+### TODO: MOET ERUIT BIJ INLEVEREN
 # choose this for not using visuals and thus making experiments faster
 headless = True
 if headless:
